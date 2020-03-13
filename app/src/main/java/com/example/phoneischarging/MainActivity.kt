@@ -1,11 +1,8 @@
 package com.example.phoneischarging
 
-import android.content.Context
 import android.content.Intent
-import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
-import android.os.Vibrator
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
@@ -30,11 +27,6 @@ class MainActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED)
         window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
 
-       val  vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-
-        vibrator.cancel()
-        val myBatteryManager = getSystemService(Context.BATTERY_SERVICE) as BatteryManager
-
         val chargingLevelList = listOf(10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100)
 
         val chargingLevelAdapter = ChargingLevelAdapter(this,chargingLevelList)
@@ -51,21 +43,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         validateLevel.setOnClickListener {
-            if (myBatteryManager.isCharging){
                 Log.i("BRAHIM", "main activity $chosenLevel")
                 val mIntent = Intent(this, MonitoringService::class.java)
                 mIntent.putExtra("chargingWanted", chosenLevel)
                 startService(mIntent)
-            } else {
-                Toast.makeText(applicationContext, "YOUR PHONE IS NOT CHARGING", Toast.LENGTH_SHORT).show()
-
-            }
         }
 
         stopService.setOnClickListener {
             stopService(Intent(this, MonitoringService::class.java))
-            Toast.makeText(applicationContext, "STOP CLICKED", Toast.LENGTH_SHORT).show()
-
+            Toast.makeText(applicationContext, "SERVICE STOPPED", Toast.LENGTH_SHORT).show()
         }
     }
 }

@@ -13,10 +13,8 @@ class MonitoringService : Service() {
     private lateinit var receiver: ChargingStateReceiver
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val  vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-        vibrator.cancel()
         val wantedLevel = intent?.getIntExtra("chargingWanted", 0) ?: 0
-        receiver = ChargingStateReceiver(wantedLevel,vibrator)
+        receiver = ChargingStateReceiver(wantedLevel)
         val filter = IntentFilter()
         filter.addAction(Intent.ACTION_BATTERY_CHANGED)
         registerReceiver(receiver, filter)
