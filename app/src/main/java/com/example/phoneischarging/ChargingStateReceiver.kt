@@ -5,15 +5,16 @@ import android.content.Context
 import android.content.Intent
 import android.os.BatteryManager
 import android.os.Build
+import android.os.Handler
 import android.os.PowerManager
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.widget.Toast
 
-
-class ChargingStateReceiver(private val wantedLevel: Int, private val vibrator: Vibrator) : BroadcastReceiver() {
+class ChargingStateReceiver(private val wantedLevel: Int) : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
+        val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         if (intent.action == Intent.ACTION_BATTERY_CHANGED) {
             val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
@@ -24,6 +25,10 @@ class ChargingStateReceiver(private val wantedLevel: Int, private val vibrator: 
                 val pattern = longArrayOf(0, 1000, 1000)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     vibrator.vibrate(VibrationEffect.createWaveform(pattern, 0))
+
+                    Handler().postDelayed({
+                        vibrator.cancel()
+                    }, 7000)
                 } else {
                     vibrator.vibrate(pattern, 0)
                 }
