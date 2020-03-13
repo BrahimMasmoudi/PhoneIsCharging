@@ -1,31 +1,22 @@
 package com.example.phoneischarging
 
-import android.app.IntentService
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.IBinder
+import android.os.Vibrator
 import android.util.Log
-
 
 class MonitoringService : Service() {
 
     private lateinit var receiver: ChargingStateReceiver
 
-//    override fun onCreate() {
-//        super.onCreate()
-////        val wantedLevel = serviceIntent?.getIntExtra("chargingWanted", 0)?: 0
-////        Log.i("BRAHIM", "service $wantedLevel")
-//        receiver = ChargingStateReceiver(100)
-//        val filter = IntentFilter()
-//        filter.addAction(Intent.ACTION_BATTERY_CHANGED)
-//        registerReceiver(receiver, filter)
-//    }
-
-
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val  vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        vibrator.cancel()
         val wantedLevel = intent?.getIntExtra("chargingWanted", 0) ?: 0
-        receiver = ChargingStateReceiver(wantedLevel)
+        receiver = ChargingStateReceiver(wantedLevel,vibrator)
         val filter = IntentFilter()
         filter.addAction(Intent.ACTION_BATTERY_CHANGED)
         registerReceiver(receiver, filter)
@@ -34,7 +25,7 @@ class MonitoringService : Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return null
     }
 
     override fun onDestroy() {
