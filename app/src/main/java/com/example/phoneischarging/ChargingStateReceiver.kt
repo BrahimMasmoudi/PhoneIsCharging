@@ -5,13 +5,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.BatteryManager
 import android.os.Build
+import android.os.PowerManager
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.util.Log
 import android.widget.Toast
 
-class ChargingStateReceiver(private val wantedLevel: Int) : BroadcastReceiver() {
-    private lateinit var vibrator: Vibrator
+
+class ChargingStateReceiver(private val wantedLevel: Int, private val vibrator: Vibrator) : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
 
@@ -20,22 +20,24 @@ class ChargingStateReceiver(private val wantedLevel: Int) : BroadcastReceiver() 
             val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
             val chargingLevel = level * 100 / scale.toFloat().toInt()
 
-            Log.i("BRAHIM", "charging level  is $chargingLevel")
-
             if (chargingLevel == wantedLevel) {
-
-                Toast.makeText(context,"CHARGED AS U WISH", Toast.LENGTH_SHORT).show()
-                vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
                 val pattern = longArrayOf(0, 1000, 1000)
-
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     vibrator.vibrate(VibrationEffect.createWaveform(pattern, 0))
                 } else {
                     vibrator.vibrate(pattern, 0)
                 }
 
+                val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager?
+                val isScreenOn = pm!!.isInteractive
+
+                if (isScreenOn) {
+                    Toast.makeText(context, "CHARGED BRO IN THE LEVEL U WANTED", Toast.LENGTH_SHORT).show()
+
+                } else {
+                    context.startActivity(Intent(context, MainActivity::class.java))
+                }
             }
         }
-
     }
 }
