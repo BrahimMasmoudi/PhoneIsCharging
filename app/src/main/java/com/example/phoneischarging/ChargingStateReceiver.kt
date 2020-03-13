@@ -24,13 +24,13 @@ class ChargingStateReceiver(private val wantedLevel: Int) : BroadcastReceiver() 
             val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager?
             val isScreenOn = pm!!.isInteractive
 
-            if (!isScreenOn && chargingLevel == wantedLevel) {
+            if (!isScreenOn && chargingLevel >= wantedLevel) {
                 context.startActivity(Intent(context, MainActivity::class.java))
                 Toast.makeText(context, "Charged as u wished", Toast.LENGTH_SHORT).show()
 
             }
 
-            if (chargingLevel == wantedLevel) {
+            if (chargingLevel >= wantedLevel) {
                 Toast.makeText(context,"Charged as u wished",Toast.LENGTH_SHORT).show()
                 val pattern = longArrayOf(0, 1000, 1000)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
