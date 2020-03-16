@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.PowerManager
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.Log
 import android.widget.Toast
 
 class ChargingStateReceiver(private val wantedLevel: Int) : BroadcastReceiver() {
@@ -20,6 +21,8 @@ class ChargingStateReceiver(private val wantedLevel: Int) : BroadcastReceiver() 
             val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
             val chargingLevel = level * 100 / scale.toFloat().toInt()
             Toast.makeText(context, "${chargingLevel}%", Toast.LENGTH_SHORT).show()
+
+            Log.i("BRAHIM", "charging = $chargingLevel")
 
             val pm = context.getSystemService(Context.POWER_SERVICE) as PowerManager?
             val isScreenOn = pm!!.isInteractive
