@@ -3,8 +3,10 @@ package com.example.phoneischarging
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.BatteryManager
 import android.os.Build
+import android.os.Handler
 import android.os.PowerManager
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -30,11 +32,13 @@ class ChargingStateReceiver(private val wantedLevel: Int) : BroadcastReceiver() 
             if (!isScreenOn && chargingLevel >= wantedLevel) {
                 context.startActivity(Intent(context, MainActivity::class.java))
                 Toast.makeText(context, "Charged as u wished", Toast.LENGTH_SHORT).show()
-
             }
 
             if (chargingLevel >= wantedLevel) {
-                Toast.makeText(context,"Charged as u wished",Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Charged as u wished", Toast.LENGTH_SHORT).show()
+                val mp = MediaPlayer.create(context, R.raw.ringtone)
+                mp.start()
+
                 val pattern = longArrayOf(0, 1000, 1000)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     vibrator.vibrate(VibrationEffect.createWaveform(pattern, 0))
@@ -42,6 +46,10 @@ class ChargingStateReceiver(private val wantedLevel: Int) : BroadcastReceiver() 
                     vibrator.vibrate(pattern, 0)
                 }
 
+                Handler().postDelayed({
+                    mp.stop()
+                    vibrator.cancel()
+                }, 10000)
             }
         }
     }
